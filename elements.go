@@ -1,15 +1,18 @@
 package main
 
-type ScorePartwise struct {
-	*Work           `xml:"work"`
-	*MovementNumber `xml:"movement-number"`
-	*MovementTitle  `xml:"movement-title"`
-	*Identification `xml:"identification"`
-	*Defaults       `xml:"defaults"`
-	*Credit         `xml:"credit"`
-	*PartList       `xml:"part-list"`
-	Version         string `xml:"version,attr"`
+type ScorePartWise struct {
+	*Work             `xml:"work"`
+	*MovementNumber   `xml:"movement-number"`
+	*MovementTitle    `xml:"movement-title"`
+	*Identification   `xml:"identification"`
+	*Defaults         `xml:"defaults"`
+	*Credit           `xml:"credit"`
+	*PartList         `xml:"part-list"`
+	*PartWithPartWise `xml:"part"`
+	Version           string `xml:"version,attr"`
 }
+
+type ScoreTimeWise struct{}
 
 type Work struct {
 	*WorkNumber `xml:"work-number"`
@@ -84,3 +87,9 @@ type PartList struct {
 }
 type PartGroup struct{}
 type ScorePart struct{}
+
+type PartWithPartWise struct {
+}
+
+type PartWithTimeWise struct {
+}
