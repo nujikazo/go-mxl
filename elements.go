@@ -221,11 +221,17 @@ type OtherAppearance struct {
 }
 
 type MusicFont struct {
-	Font Font `xml:"font"`
+	FontFamily string `xml:"font-family,attr,omitempty"`
+	FontStyle  string `xml:"font-style,attr,omitempty"`
+	FontSize   string `xml:"font-size,attr,omitempty"`
+	FontWeight string `xml:"font-weight,attr,omitempty"`
 }
 
 type WordFont struct {
-	Font Font `xml:"font"`
+	FontFamily string `xml:"font-family,attr,omitempty"`
+	FontStyle  string `xml:"font-style,attr,omitempty"`
+	FontSize   string `xml:"font-size,attr,omitempty"`
+	FontWeight string `xml:"font-weight,attr,omitempty"`
 }
 
 type LyricFont struct {
@@ -345,7 +351,9 @@ type GroupName struct {
 }
 
 type GroupNameDisplay struct {
-	// Add display text formatting elements
+	PrintObject    string           `xml:"print-object,attr,omitempty"`
+	DisplayText    []DisplayText    `xml:"display-text"`
+	AccidentalText []AccidentalText `xml:"accidental-text"`
 }
 
 type GroupAbbreviation struct {
@@ -353,7 +361,9 @@ type GroupAbbreviation struct {
 }
 
 type GroupAbbreviationDisplay struct {
-	// Add display text formatting elements
+	PrintObject    string           `xml:"print-object,attr,omitempty"`
+	DisplayText    []DisplayText    `xml:"display-text"`
+	AccidentalText []AccidentalText `xml:"accidental-text"`
 }
 
 type GroupSymbol struct {
@@ -375,7 +385,20 @@ type GroupTime struct {
 }
 
 type Footnote struct {
-	// Add footnote formatting
+	DefaultX   float32 `xml:"default-x,attr,omitempty"`
+	DefaultY   float32 `xml:"default-y,attr,omitempty"`
+	RelativeX  float32 `xml:"relative-x,attr,omitempty"`
+	RelativeY  float32 `xml:"relative-y,attr,omitempty"`
+	FontFamily string  `xml:"font-family,attr,omitempty"`
+	FontStyle  string  `xml:"font-style,attr,omitempty"`
+	FontSize   string  `xml:"font-size,attr,omitempty"`
+	FontWeight string  `xml:"font-weight,attr,omitempty"`
+	Color      string  `xml:"color,attr,omitempty"`
+	Halign     string  `xml:"halign,attr,omitempty"`
+	Valign     string  `xml:"valign,attr,omitempty"`
+	Justify    string  `xml:"justify,attr,omitempty"`
+	Lang       string  `xml:"xml:lang,attr,omitempty"`
+	Value      string  `xml:",chardata"`
 }
 
 type Level struct {
@@ -392,8 +415,10 @@ type ScorePart struct {
 	PartAbbreviationDisplay *PartAbbreviationDisplay `xml:"part-abbreviation-display"`
 	Group                   []Group                  `xml:"group"`
 	ScoreInstrument         []ScoreInstrument        `xml:"score-instrument"`
+	Player                  []Player                 `xml:"player"`
 	MidiDevice              []MidiDevice             `xml:"midi-device"`
 	MidiInstrument          []MidiInstrument         `xml:"midi-instrument"`
+	PartLink                []PartLink               `xml:"part-link"`
 }
 
 type PartName struct {
@@ -402,7 +427,9 @@ type PartName struct {
 }
 
 type PartNameDisplay struct {
-	// Add display text formatting elements
+	PrintObject    string           `xml:"print-object,attr,omitempty"`
+	DisplayText    []DisplayText    `xml:"display-text"`
+	AccidentalText []AccidentalText `xml:"accidental-text"`
 }
 
 type PartAbbreviation struct {
@@ -411,7 +438,9 @@ type PartAbbreviation struct {
 }
 
 type PartAbbreviationDisplay struct {
-	// Add display text formatting elements
+	PrintObject    string           `xml:"print-object,attr,omitempty"`
+	DisplayText    []DisplayText    `xml:"display-text"`
+	AccidentalText []AccidentalText `xml:"accidental-text"`
 }
 
 type Group struct {
@@ -420,8 +449,9 @@ type Group struct {
 
 type ScoreInstrument struct {
 	ID                string             `xml:"id,attr"`
-	InstrumentName    string             `xml:"instrument-name"`
-	InstrumentSound   string             `xml:"instrument-sound,omitempty"`
+	InstrumentName         string             `xml:"instrument-name"`
+	InstrumentAbbreviation string             `xml:"instrument-abbreviation,omitempty"`
+	InstrumentSound        string             `xml:"instrument-sound,omitempty"`
 	Solo              *Solo              `xml:"solo,omitempty"`
 	Ensemble          *int               `xml:"ensemble,omitempty"`
 	VirtualInstrument *VirtualInstrument `xml:"virtual-instrument,omitempty"`
@@ -483,6 +513,7 @@ type Measure struct {
 // Note structures (simplified - this is one of the most complex parts)
 type Note struct {
 	Grace            *Grace            `xml:"grace"`
+	Cue              *Cue              `xml:"cue"`
 	Chord            *Chord            `xml:"chord"`
 	Pitch            *Pitch            `xml:"pitch"`
 	Unpitched        *Unpitched        `xml:"unpitched"`
@@ -497,11 +528,13 @@ type Note struct {
 	TimeModification *TimeModification `xml:"time-modification"`
 	Stem             *Stem             `xml:"stem"`
 	Notehead         *Notehead         `xml:"notehead"`
+	NoteheadText     *NoteheadText     `xml:"notehead-text"`
 	Staff            *int              `xml:"staff"`
 	Beam             []Beam            `xml:"beam"`
 	Notations        []Notations       `xml:"notations"`
 	Lyric            []Lyric           `xml:"lyric"`
 	Play             *Play             `xml:"play"`
+	Listen           *Listen           `xml:"listen"`
 }
 
 type Grace struct {
@@ -679,10 +712,12 @@ type EndParagraph struct {
 }
 
 type Play struct {
-	ID          string `xml:"id,attr,omitempty"`
-	Ipa         string `xml:"ipa,omitempty"`
-	Mute        string `xml:"mute,omitempty"`
-	SemiPitched string `xml:"semi-pitched,omitempty"`
+	ID               string            `xml:"id,attr,omitempty"`
+	Ipa              string            `xml:"ipa,omitempty"`
+	Mute             string            `xml:"mute,omitempty"`
+	SemiPitched      string            `xml:"semi-pitched,omitempty"`
+	OtherPlay        *OtherPlay        `xml:"other-play"`
+	InstrumentChange *InstrumentChange `xml:"instrument-change"`
 }
 
 // Print structures
@@ -745,6 +780,7 @@ type Key struct {
 	KeyStep       []KeyStep       `xml:"key-step"`
 	KeyAlter      []KeyAlter      `xml:"key-alter"`
 	KeyAccidental []KeyAccidental `xml:"key-accidental"`
+	KeyOctave     []KeyOctave     `xml:"key-octave"`
 }
 
 type Cancel struct {
@@ -815,6 +851,7 @@ type StaffDetails struct {
 	PrintSpacing string        `xml:"print-spacing,attr,omitempty"`
 	StaffType    *StaffType    `xml:"staff-type"`
 	StaffLines   *int          `xml:"staff-lines"`
+	LineDetail   []LineDetail  `xml:"line-detail"`
 	StaffTuning  []StaffTuning `xml:"staff-tuning"`
 	Capo         *int          `xml:"capo"`
 	StaffSize    *float32      `xml:"staff-size"`
@@ -1396,10 +1433,11 @@ type Beater struct {
 }
 
 type Stick struct {
-	Tip         string `xml:"tip,attr,omitempty"`
-	Dashed      string `xml:"dashed-circle,attr,omitempty"`
-	Parentheses string `xml:"parentheses,attr,omitempty"`
-	Value       string `xml:",chardata"`
+	Tip           string `xml:"tip,attr,omitempty"`
+	DashedCircle  string `xml:"dashed-circle,attr,omitempty"`
+	Parentheses   string `xml:"parentheses,attr,omitempty"`
+	StickType     string `xml:"stick-type"`
+	StickMaterial string `xml:"stick-material"`
 }
 
 type StickLocation struct {
@@ -1566,6 +1604,7 @@ type Harmony struct {
 	Placement   string     `xml:"placement,attr,omitempty"`
 	ID          string     `xml:"id,attr,omitempty"`
 	Root        []Root     `xml:"root"`
+	Numeral     *Numeral   `xml:"numeral"`
 	Function    *StyleText `xml:"function"`
 	Kind        Kind       `xml:"kind"`
 	Inversion   *Inversion `xml:"inversion"`
@@ -1632,8 +1671,9 @@ type Inversion struct {
 }
 
 type Bass struct {
-	BassStep  StyleText  `xml:"bass-step"`
-	BassAlter *BassAlter `xml:"bass-alter"`
+	BassSeparator *BassSeparator `xml:"bass-separator"`
+	BassStep      StyleText     `xml:"bass-step"`
+	BassAlter     *BassAlter    `xml:"bass-alter"`
 }
 
 type BassAlter struct {
@@ -1777,10 +1817,10 @@ type Sound struct {
 }
 
 type Swing struct {
-	First      int       `xml:"first,attr,omitempty"`
-	Second     int       `xml:"second,attr,omitempty"`
-	SwingType  string    `xml:"swing-type,attr,omitempty"`
-	SwingStyle string    `xml:"swing-style,attr,omitempty"`
+	First      *int      `xml:"first"`
+	Second     *int      `xml:"second"`
+	SwingType  *string   `xml:"swing-type"`
+	SwingStyle *string   `xml:"swing-style"`
 	Straight   *Straight `xml:"straight"`
 }
 
@@ -3161,6 +3201,7 @@ type Fermata struct {
 	FontWeight string  `xml:"font-weight,attr,omitempty"`
 	Color      string  `xml:"color,attr,omitempty"`
 	ID         string  `xml:"id,attr,omitempty"`
+	Value      string  `xml:",chardata"`
 }
 
 type Arpeggiate struct {
@@ -3202,4 +3243,182 @@ type OtherNotation struct {
 	Placement   string  `xml:"placement,attr,omitempty"`
 	ID          string  `xml:"id,attr,omitempty"`
 	Value       string  `xml:",chardata"`
+}
+
+// Display text elements
+type DisplayText struct {
+	DefaultX   float32 `xml:"default-x,attr,omitempty"`
+	DefaultY   float32 `xml:"default-y,attr,omitempty"`
+	RelativeX  float32 `xml:"relative-x,attr,omitempty"`
+	RelativeY  float32 `xml:"relative-y,attr,omitempty"`
+	FontFamily string  `xml:"font-family,attr,omitempty"`
+	FontStyle  string  `xml:"font-style,attr,omitempty"`
+	FontSize   string  `xml:"font-size,attr,omitempty"`
+	FontWeight string  `xml:"font-weight,attr,omitempty"`
+	Color      string  `xml:"color,attr,omitempty"`
+	Halign     string  `xml:"halign,attr,omitempty"`
+	Valign     string  `xml:"valign,attr,omitempty"`
+	Lang       string  `xml:"xml:lang,attr,omitempty"`
+	Value      string  `xml:",chardata"`
+}
+
+type AccidentalText struct {
+	DefaultX   float32 `xml:"default-x,attr,omitempty"`
+	DefaultY   float32 `xml:"default-y,attr,omitempty"`
+	RelativeX  float32 `xml:"relative-x,attr,omitempty"`
+	RelativeY  float32 `xml:"relative-y,attr,omitempty"`
+	FontFamily string  `xml:"font-family,attr,omitempty"`
+	FontStyle  string  `xml:"font-style,attr,omitempty"`
+	FontSize   string  `xml:"font-size,attr,omitempty"`
+	FontWeight string  `xml:"font-weight,attr,omitempty"`
+	Color      string  `xml:"color,attr,omitempty"`
+	Halign     string  `xml:"halign,attr,omitempty"`
+	Valign     string  `xml:"valign,attr,omitempty"`
+	Lang       string  `xml:"xml:lang,attr,omitempty"`
+	Value      string  `xml:",chardata"`
+}
+
+// Cue note
+type Cue struct {
+	// Empty element, presence indicates cue note
+}
+
+// Notehead text
+type NoteheadText struct {
+	DisplayText    []DisplayText    `xml:"display-text"`
+	AccidentalText []AccidentalText `xml:"accidental-text"`
+}
+
+// Listen (note-level, MusicXML 4.0)
+type Listen struct {
+	Assess      []Assess      `xml:"assess"`
+	Wait        []Wait        `xml:"wait"`
+	OtherListen []OtherListen `xml:"other-listen"`
+}
+
+type Assess struct {
+	Type     string `xml:"type,attr"`
+	Player   string `xml:"player,attr,omitempty"`
+	TimeOnly string `xml:"time-only,attr,omitempty"`
+}
+
+type OtherListen struct {
+	Type     string `xml:"type,attr"`
+	Player   string `xml:"player,attr,omitempty"`
+	TimeOnly string `xml:"time-only,attr,omitempty"`
+	Value    string `xml:",chardata"`
+}
+
+// Other play
+type OtherPlay struct {
+	Type  string `xml:"type,attr"`
+	Value string `xml:",chardata"`
+}
+
+// Instrument change (MusicXML 4.0)
+type InstrumentChange struct {
+	ID                     string             `xml:"id,attr"`
+	InstrumentName         string             `xml:"instrument-name"`
+	InstrumentAbbreviation string             `xml:"instrument-abbreviation,omitempty"`
+	InstrumentSound        string             `xml:"instrument-sound,omitempty"`
+	Solo                   *Solo              `xml:"solo,omitempty"`
+	Ensemble               *int               `xml:"ensemble,omitempty"`
+	VirtualInstrument      *VirtualInstrument `xml:"virtual-instrument,omitempty"`
+}
+
+// Key octave
+type KeyOctave struct {
+	Number int    `xml:"number,attr"`
+	Cancel string `xml:"cancel,attr,omitempty"`
+	Value  int    `xml:",chardata"`
+}
+
+// Line detail (MusicXML 4.0)
+type LineDetail struct {
+	Line        int     `xml:"line,attr"`
+	LineType    string  `xml:"line-type,attr,omitempty"`
+	PrintObject string  `xml:"print-object,attr,omitempty"`
+	Color       string  `xml:"color,attr,omitempty"`
+	Width       float32 `xml:"width,attr,omitempty"`
+}
+
+// Numeral (MusicXML 4.0)
+type Numeral struct {
+	NumeralRoot  NumeralRoot   `xml:"numeral-root"`
+	NumeralAlter *NumeralAlter `xml:"numeral-alter"`
+	NumeralKey   *NumeralKey   `xml:"numeral-key"`
+}
+
+type NumeralRoot struct {
+	Text  string `xml:"text,attr,omitempty"`
+	Value int    `xml:",chardata"`
+}
+
+type NumeralAlter struct {
+	PrintObject string  `xml:"print-object,attr,omitempty"`
+	Location    string  `xml:"location,attr,omitempty"`
+	Value       float32 `xml:",chardata"`
+}
+
+type NumeralKey struct {
+	PrintObject   string `xml:"print-object,attr,omitempty"`
+	NumeralFifths int    `xml:"numeral-fifths"`
+	NumeralMode   string `xml:"numeral-mode"`
+}
+
+// Bass separator
+type BassSeparator struct {
+	DefaultX   float32 `xml:"default-x,attr,omitempty"`
+	DefaultY   float32 `xml:"default-y,attr,omitempty"`
+	RelativeX  float32 `xml:"relative-x,attr,omitempty"`
+	RelativeY  float32 `xml:"relative-y,attr,omitempty"`
+	FontFamily string  `xml:"font-family,attr,omitempty"`
+	FontStyle  string  `xml:"font-style,attr,omitempty"`
+	FontSize   string  `xml:"font-size,attr,omitempty"`
+	FontWeight string  `xml:"font-weight,attr,omitempty"`
+	Color      string  `xml:"color,attr,omitempty"`
+	Value      string  `xml:",chardata"`
+}
+
+// Player (MusicXML 4.0)
+type Player struct {
+	ID         string `xml:"id,attr"`
+	PlayerName string `xml:"player-name"`
+}
+
+// Part link (MusicXML 4.0)
+type PartLink struct {
+	Href           string           `xml:"xlink:href,attr"`
+	Type           string           `xml:"xlink:type,attr,omitempty"`
+	Role           string           `xml:"xlink:role,attr,omitempty"`
+	Title          string           `xml:"xlink:title,attr,omitempty"`
+	Show           string           `xml:"xlink:show,attr,omitempty"`
+	Actuate        string           `xml:"xlink:actuate,attr,omitempty"`
+	GroupLink      []GroupLink      `xml:"group-link"`
+	InstrumentLink []InstrumentLink `xml:"instrument-link"`
+	PartClef       *PartClef        `xml:"part-clef"`
+	PartTranspose  *PartTranspose   `xml:"part-transpose"`
+}
+
+type GroupLink struct {
+	Value string `xml:",chardata"`
+}
+
+type InstrumentLink struct {
+	ID string `xml:"id,attr"`
+}
+
+type PartClef struct {
+	Number           int    `xml:"number,attr,omitempty"`
+	Sign             string `xml:"sign"`
+	Line             *int   `xml:"line"`
+	ClefOctaveChange *int   `xml:"clef-octave-change"`
+}
+
+type PartTranspose struct {
+	Number       int     `xml:"number,attr,omitempty"`
+	Diatonic     *int    `xml:"diatonic"`
+	Chromatic    int     `xml:"chromatic"`
+	OctaveChange *int    `xml:"octave-change"`
+	Double       *Double `xml:"double"`
 }
