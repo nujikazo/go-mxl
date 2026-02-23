@@ -1,4 +1,4 @@
-package main
+package mxl
 
 // Root structures
 type ScorePartWise struct {

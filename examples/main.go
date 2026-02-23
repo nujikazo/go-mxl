@@ -1,10 +1,10 @@
-package examples
+package main
 
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"mxl"
 	"os"
 	"strings"
 )
@@ -31,13 +31,13 @@ func parseFile(filename string) {
 	fmt.Println(strings.Repeat("-", 50))
 
 	// Read the file
-	xmlData, err := ioutil.ReadFile(filename)
+	xmlData, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatalf("Error reading file: %v", err)
 	}
 
 	// Parse the XML
-	var score ScorePartWise
+	var score mxl.ScorePartWise
 	err = xml.Unmarshal(xmlData, &score)
 	if err != nil {
 		log.Fatalf("Error parsing XML: %v", err)
@@ -190,7 +190,7 @@ func parseSampleXML() {
 </score-partwise>`
 
 	// Parse the sample XML
-	var score ScorePartWise
+	var score mxl.ScorePartWise
 	err := xml.Unmarshal([]byte(sampleXML), &score)
 	if err != nil {
 		log.Fatalf("Error parsing sample XML: %v", err)
@@ -200,8 +200,16 @@ func parseSampleXML() {
 	displayScoreInfo(&score)
 }
 
+// titleCase capitalizes the first letter of a string
+func titleCase(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
 // displayScoreInfo shows the parsed score information
-func displayScoreInfo(score *ScorePartWise) {
+func displayScoreInfo(score *mxl.ScorePartWise) {
 	// Basic Information
 	fmt.Println("SCORE INFORMATION")
 	fmt.Println(strings.Repeat("-", 50))
@@ -222,7 +230,7 @@ func displayScoreInfo(score *ScorePartWise) {
 		fmt.Println(strings.Repeat("-", 50))
 
 		for _, creator := range score.Identification.Creator {
-			fmt.Printf("%s: %s\n", strings.Title(creator.Type), creator.Value)
+			fmt.Printf("%s: %s\n", titleCase(creator.Type), creator.Value)
 		}
 
 		if score.Identification.Rights != nil && len(score.Identification.Rights) > 0 {
@@ -423,8 +431,8 @@ func displayScoreInfo(score *ScorePartWise) {
 	fmt.Printf("Has Articulations: %v\n", hasArticulations)
 }
 
-// Helper function to extract pitch name
-func getPitchName(note *Note) string {
+// getPitchName extracts pitch name from a note
+func getPitchName(note *mxl.Note) string {
 	if note.Pitch != nil {
 		alter := ""
 		if note.Pitch.Alter != nil {
@@ -441,16 +449,16 @@ func getPitchName(note *Note) string {
 	return "Unknown"
 }
 
-// Helper function to get note duration in beats
-func getNoteDurationInBeats(note *Note, divisions int) float64 {
+// getNoteDurationInBeats returns note duration in beats
+func getNoteDurationInBeats(note *mxl.Note, divisions int) float64 {
 	if note.Duration != nil && divisions > 0 {
 		return float64(*note.Duration) / float64(divisions)
 	}
 	return 0
 }
 
-// Example of how to find specific elements
-func findDynamicMarkings(score *ScorePartWise) []string {
+// findDynamicMarkings finds all dynamic markings in a score
+func findDynamicMarkings(score *mxl.ScorePartWise) []string {
 	var dynamics []string
 
 	for _, part := range score.Part {
@@ -468,7 +476,6 @@ func findDynamicMarkings(score *ScorePartWise) []string {
 						if notation.Dynamics.MF != nil {
 							dynamics = append(dynamics, "mf")
 						}
-						// ... check other dynamics
 					}
 				}
 			}
@@ -478,6 +485,7 @@ func findDynamicMarkings(score *ScorePartWise) []string {
 				for _, dirType := range direction.DirectionType {
 					if dirType.Dynamics != nil {
 						// Process dynamics in directions
+						_ = dirType.Dynamics
 					}
 				}
 			}
@@ -487,12 +495,12 @@ func findDynamicMarkings(score *ScorePartWise) []string {
 	return dynamics
 }
 
-// Example of how to extract all lyrics
-func extractLyrics(score *ScorePartWise) map[string][]string {
+// extractLyrics extracts all lyrics from a score
+func extractLyrics(score *mxl.ScorePartWise) map[string][]string {
 	lyrics := make(map[string][]string)
 
 	for _, part := range score.Part {
-		partLyrics := []string{}
+		var partLyrics []string
 
 		for _, measure := range part.Measure {
 			for _, note := range measure.Note {
@@ -512,8 +520,8 @@ func extractLyrics(score *ScorePartWise) map[string][]string {
 	return lyrics
 }
 
-// Example of MIDI export preparation
-func prepareMIDIData(score *ScorePartWise) {
+// prepareMIDIData demonstrates MIDI export preparation
+func prepareMIDIData(score *mxl.ScorePartWise) {
 	fmt.Println("\nMIDI PREPARATION EXAMPLE")
 	fmt.Println(strings.Repeat("-", 50))
 
@@ -554,9 +562,9 @@ func prepareMIDIData(score *ScorePartWise) {
 			// Process notes
 			for _, note := range measure.Note {
 				if note.Pitch != nil && note.Duration != nil {
-					duration := getNoteDurationInBeats(note, divisions)
+					duration := getNoteDurationInBeats(&note, divisions)
 					fmt.Printf("  Time=%.2f: %s (%.2f beats)\n",
-						currentTime, getPitchName(note), duration)
+						currentTime, getPitchName(&note), duration)
 
 					if note.Chord == nil { // Not a chord, advance time
 						currentTime += duration
